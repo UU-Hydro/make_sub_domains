@@ -137,13 +137,15 @@ def main():
     outlets = pcr.pit(ldd_map)
     outlets_boolean = pcr.defined(outlets)
     outlets_ordered = pcr.areaorder(pcr.ifthen(outlets_boolean, catchmenttotal) * -1.0, pcr.nominal(outlets_boolean))
+
+    pcr.aguila(outlets_ordered)
+    input("Press Enter to continue...")
+
     catchment_map = pcr.areamajority(outlets_ordered, catchment_map)
     
 
     # use the catchment map as the initial subdomain
     subdomains_initial = catchment_map
-    pcr.aguila(subdomains_initial)
-    input("Press Enter to continue...")
 
 
     # ~ # read global subdomain file - initial subdomain
