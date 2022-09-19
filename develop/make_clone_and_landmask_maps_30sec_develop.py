@@ -150,7 +150,8 @@ def main():
     num_of_catchments = int(vos.getMinMaxMean(pcr.scalar(catchment_map))[1])
 
     # size of every catchment
-    catchment_map_size = pcr.areamaximum(catchmenttotal, catchment_map) 
+    catchment_map_size = pcr.areamaximum(catchmenttotal, catchment_map)
+    pcr.aguila(catchment_map_size) 
     
     # identify the large catchments
     large_catchments = pcr.ifthen(catchment_map_size > threshold, catchment_map)
