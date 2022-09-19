@@ -77,6 +77,7 @@ global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_
 # threshold value that will be used as the maximum size of catchments
 # - for 30arcmin
 threshold = 200.
+threshold = 100.
 
 # global subdomain file (initial)
 # - on snellius
