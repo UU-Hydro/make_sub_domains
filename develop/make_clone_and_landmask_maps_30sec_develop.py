@@ -73,6 +73,11 @@ def define_landmask(input_file, clone_map_file, output_map_file):
 # - on snellius
 global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_30min/routing/surface_water_bodies/version_20210615/lddsound_30min_version_20210615.map"
 
+
+# threshold value that will be used as the maximum size of catchments
+# - for 30arcmin
+threshold = 200.
+
 # global subdomain file (initial)
 # - on snellius
 # ~ global_subdomain_file = "/projects/0/dfguu/users/edwin/data//make_global_subdomains/version_2021-02-17/general_subdomains_using_threshold_of_50_cells/global_subdomains_30min_final_filled.map"
@@ -131,26 +136,63 @@ def main():
     catchment_map = pcr.catchment(ldd_map, pcr.pit(ldd_map))
 
 
-    
     # sort the catchment from the largest one
-    catchmenttotal = pcr.catchmenttotal(pcr.scalar(1.0), ldd_map)
-    outlets = pcr.pit(ldd_map)
-    outlets = pcr.ifthen(pcr.scalar(outlets) > 0, outlets)
+    catchmenttotal    = pcr.catchmenttotal(pcr.scalar(1.0), ldd_map)
+    outlets           = pcr.pit(ldd_map)
+    outlets           = pcr.ifthen(pcr.scalar(outlets) > 0, outlets)
+    outlets_boolean   = pcr.defined(outlets)
+    outlets_boolean   = pcr.ifthen(outlets_boolean, outlets_boolean)
+    outlets_ordered   = pcr.areaorder(pcr.ifthen(outlets_boolean, catchmenttotal) * -1.0, pcr.nominal(outlets_boolean))
+    # - catchment map ranked from the largest one
+    catchment_map     = pcr.areamajority(pcr.nominal(outlets_ordered), catchment_map)
+    
+    # number of catchments
+    num_of_catchments = int(vos.getMinMaxMean(pcr.scalar(catchment_map))[1])
 
-    outlets_boolean = pcr.defined(outlets)
-    outlets_boolean = pcr.ifthen(outlets_boolean, outlets_boolean)
-    outlets_ordered = pcr.areaorder(pcr.ifthen(outlets_boolean, catchmenttotal) * -1.0, pcr.nominal(outlets_boolean))
-
-    pcr.aguila(outlets_ordered)
+    # size of every catchment
+    catchment_map_size = pcr.areamaximum(catchmenttotal, catchment_map) 
+    
+    # identify the large catchments
+    large_catchments = pcr.ifthen(catchment_map_size > threshold, catchment_map)
+    
+    # define the subcatchments of every large catchment
+    # - ldd
+    ldd_large_catchments            = pcr.lddmask(ldd_map, pcr.defined(large_catchments))
+    # - size
+    catchmenttotal_large_catchments = pcr.catchmenttotal(pcr.scalar(1.0), ldd_large_catchments)
+    # - stream order
+    streamorder_large_catchments    = pcr.streamorder(ldd_large_catchments)
+    # - outlets/pits
+    outlets_large_catchments        = pcr.defined(pcr.pit(ldd_large_catchments))
+    outlets_large_catchments        = pcr.ifthen(outlets_large_catchments, outlets_large_catchments)  
+    # - cells with the catchment size eq threshold
+    upstream_threshold_cells        = pcr.ifthen(catchmenttotal_large_catchments == threshold, pcr.boolean(1.0))
+    # - confluences
+    confluences_large_catchments    = pcr.ifthen(pcr.downstream(ldd_large_catchments, streamorder_large_catchments) == streamorder_large_catchments, pcr.boolean(1.0))
+    # - provide ids
+    point_ids = pcr.nominal(pcr.uniqueid(pcr.cover(outlets_large_catchments, upstream_threshold_cells, confluences_large_catchments)))
+    # - todo: add lakes and reservoirs
+    subcatchment = pcr.subcatchment(ldd_large_catchments, point_ids)
+    
+    pcr.aguila(subcatchment)
     input("Press Enter to continue...")
-
-    catchment_map = pcr.areamajority(pcr.nominal(outlets_ordered), catchment_map)
     
 
-    # use the catchment map as the initial subdomain
-    subdomains_initial = catchment_map
-    pcr.aguila(subdomains_initial)
-    input("Press Enter to continue...")
+
+    # number of large catchments
+    num_of_large_catchments = int(vos.getMinMaxMean(pcr.scalar(subdomains_initial))[1])
+    
+
+    subdomains_final = pcr.ifthen(pcr.scalar(subdomains_initial) < -7777, pcr.nominal(0))
+    
+    for nr in range(1, num_of_large_catchments + 1, 1):
+
+        msg = "Processing the large catchment %s" %(str(nr))
+        logger.info(msg)
+
+
+    # ~ pcr.aguila(subdomains_initial)
+    # ~ input("Press Enter to continue...")
 
 
     # ~ # read global subdomain file - initial subdomain
