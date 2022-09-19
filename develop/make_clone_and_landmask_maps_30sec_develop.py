@@ -169,6 +169,7 @@ def main():
     upstream_threshold_cells        = pcr.ifthen(catchmenttotal_large_catchments == threshold, pcr.boolean(1.0))
     # - confluences
     confluences_large_catchments    = pcr.ifthen(pcr.downstream(ldd_large_catchments, streamorder_large_catchments) != streamorder_large_catchments, pcr.boolean(1.0))
+    confluences_large_catchments    = pcr.ifthen(catchmenttotal_large_catchments > threshold, confluences_large_catchments)
     # - provide ids
     point_ids = pcr.nominal(pcr.uniqueid(pcr.cover(outlets_large_catchments, upstream_threshold_cells, confluences_large_catchments)))
     # - todo: add lakes and reservoirs
