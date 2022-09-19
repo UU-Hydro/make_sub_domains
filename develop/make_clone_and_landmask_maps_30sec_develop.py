@@ -144,7 +144,7 @@ def main():
     pcr.aguila(outlets_ordered)
     input("Press Enter to continue...")
 
-    catchment_map = pcr.areamajority(outlets_ordered, catchment_map)
+    catchment_map = pcr.areamajority(pcr.nominal(outlets_ordered), catchment_map)
     
 
     # use the catchment map as the initial subdomain
