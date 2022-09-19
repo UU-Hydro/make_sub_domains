@@ -135,6 +135,10 @@ def main():
     # sort the catchment from the largest one
     catchmenttotal = pcr.catchmenttotal(pcr.scalar(1.0), ldd_map)
     outlets = pcr.pit(ldd_map)
+ 
+    pcr.aguila(outlets)
+    input("Press Enter to continue...")
+
     outlets_boolean = pcr.defined(outlets)
     outlets_boolean = pcr.ifthen(outlets_boolean, outlets_boolean)
     outlets_ordered = pcr.areaorder(pcr.ifthen(outlets_boolean, catchmenttotal) * -1.0, pcr.nominal(outlets_boolean))
