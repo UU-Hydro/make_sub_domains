@@ -136,6 +136,7 @@ def main():
     catchmenttotal = pcr.catchmenttotal(pcr.scalar(1.0), ldd_map)
     outlets = pcr.pit(ldd_map)
     outlets_boolean = pcr.defined(outlets)
+    outlets_boolean = pcr.ifthen(outlets_boolean, outlets_boolean)
     outlets_ordered = pcr.areaorder(pcr.ifthen(outlets_boolean, catchmenttotal) * -1.0, pcr.nominal(outlets_boolean))
 
     pcr.aguila(outlets_ordered)
