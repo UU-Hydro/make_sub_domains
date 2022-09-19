@@ -135,7 +135,7 @@ def main():
     # sort the catchment from the largest one
     catchmenttotal = pcr.catchmenttotal(pcr.scalar(1.0), ldd_map)
     outlets = pcr.pit(ldd_map)
-    outlets = pcr.ifthen(pcr.scalar(outlets) gt 0, outlets)
+    outlets = pcr.ifthen(pcr.scalar(outlets) > 0, outlets)
 
     outlets_boolean = pcr.defined(outlets)
     outlets_boolean = pcr.ifthen(outlets_boolean, outlets_boolean)
