@@ -165,6 +165,7 @@ def main():
     # - outlets/pits
     outlets_large_catchments        = pcr.defined(pcr.pit(ldd_large_catchments))
     outlets_large_catchments        = pcr.ifthen(outlets_large_catchments, outlets_large_catchments)  
+    pcr.aguila(outlets_large_catchments)
     # - cells with the catchment size eq threshold
     upstream_threshold_cells        = pcr.ifthen(catchmenttotal_large_catchments == threshold, pcr.boolean(1.0))
     # - confluences
@@ -172,11 +173,11 @@ def main():
     confluences_large_catchments    = pcr.ifthen(catchmenttotal_large_catchments > threshold, confluences_large_catchments)
     # - provide ids
     point_ids = pcr.nominal(pcr.uniqueid(pcr.cover(outlets_large_catchments, upstream_threshold_cells, confluences_large_catchments)))
-    pcr.aguila(point_ids)
+    # ~ pcr.aguila(point_ids)
     # - todo: add lakes and reservoirs
     subcatchment = pcr.subcatchment(ldd_large_catchments, point_ids)
     
-    pcr.aguila(subcatchment)
+    # ~ pcr.aguila(subcatchment)
     input("Press Enter to continue...")
     
 
