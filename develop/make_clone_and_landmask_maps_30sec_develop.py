@@ -135,9 +135,7 @@ def main():
     # sort the catchment from the largest one
     catchmenttotal = pcr.catchmenttotal(pcr.scalar(1.0), ldd_map)
     outlets = pcr.pit(ldd_map)
- 
-    pcr.aguila(outlets)
-    input("Press Enter to continue...")
+    outlets = pcr.ifthen(pcr.scalar(outlets) gt 0, outlets)
 
     outlets_boolean = pcr.defined(outlets)
     outlets_boolean = pcr.ifthen(outlets_boolean, outlets_boolean)
@@ -151,6 +149,8 @@ def main():
 
     # use the catchment map as the initial subdomain
     subdomains_initial = catchment_map
+    pcr.aguila(subdomains_initial)
+    input("Press Enter to continue...")
 
 
     # ~ # read global subdomain file - initial subdomain
