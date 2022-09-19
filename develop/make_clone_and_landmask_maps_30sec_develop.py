@@ -164,7 +164,7 @@ def main():
     streamorder_large_catchments     = pcr.streamorder(ldd_large_catchments)
     # - outlets/pits
     outlets_large_catchments         = pcr.pit(ldd_large_catchments)
-    outlets_large_catchments_boolean = pcr.ifthen(pcr.scalar(outlets_large_catchments) > 0, outlets_large_catchments)
+    outlets_large_catchments_boolean = pcr.ifthen(pcr.scalar(outlets_large_catchments) > 0, pcr.boolean(1.0))
     outlets_large_catchments_boolean = pcr.ifthen(outlets_large_catchments_boolean, outlets_large_catchments_boolean)  
     # - cells with the catchment size eq threshold
     upstream_threshold_cells         = pcr.ifthen(catchmenttotal_large_catchments == threshold, pcr.boolean(1.0))
