@@ -91,7 +91,7 @@ threshold = 5000.
 
 
 # threshold factor to create sub catchments in the level
-threshold_subcathcment_factor = 1.5
+threshold_subcathcment_factor = 2.0
 
 # global subdomain file (initial)
 # - on snellius
