@@ -86,13 +86,13 @@ global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_
 # ~ threshold = 100.
 # - for 5arcmin
 #~ threshold = 500000./(10.*10.)
-threshold = 5000.
-# ~ threshold = 2500.
+# ~ threshold = 5000.
+threshold = 2500.
 # ~ threshold = 500000.
 
 
 # threshold factor to create sub catchments in the level
-threshold_subcathcment_factor = 1.0
+threshold_subcathcment_factor = 2.0
 
 # global subdomain file (initial)
 # - on snellius
