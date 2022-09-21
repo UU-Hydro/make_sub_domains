@@ -75,6 +75,9 @@ def define_landmask(input_file, clone_map_file, output_map_file):
 #~ global_ldd_inp_file    = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_30min/routing/surface_water_bodies/version_20210615/lddsound_30min_version_20210615.map"
 # - 5min
 global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_05min/routing/surface_water_bodies/version_20210330/lddsound_05min_version_20210330.map"
+# - 30sec
+global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_30sec/routing/surface_water_bodies/version_2020-05-XX/lddsound_30sec_version_202005XX.map"
+
 
 
 # threshold value that will be used as the maximum size of catchments (number of cells_
