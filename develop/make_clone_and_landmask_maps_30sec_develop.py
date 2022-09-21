@@ -71,13 +71,24 @@ def define_landmask(input_file, clone_map_file, output_map_file):
 # ~ # - on eejit
 # ~ global_ldd_inp_file   = "/scratch/depfg/sutan101/data/pcrglobwb_input_arise/develop/global_30min/routing/surface_water_bodies/version_20210615/lddsound_30min_version_20210615.map"
 # - on snellius
-global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_30min/routing/surface_water_bodies/version_20210615/lddsound_30min_version_20210615.map"
+#~ # - 30min
+#~ global_ldd_inp_file    = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_30min/routing/surface_water_bodies/version_20210615/lddsound_30min_version_20210615.map"
+# - 5min
+global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_05min/routing/surface_water_bodies/version_20210330/lddsound_05min_version_20210330.map"
 
 
-# threshold value that will be used as the maximum size of catchments
+# threshold value that will be used as the maximum size of catchments (number of cells_
 # - for 30arcmin
 threshold = 200.
 threshold = 100.
+# - for 5arcmin
+#~ threshold = 500000./(10.*10.)
+#~ threshold = 5000.
+threshold = 2500.
+
+
+# threshold factor to create sub catchments in the level
+threshold_subcathcment_factor = 2.0
 
 # global subdomain file (initial)
 # - on snellius
@@ -85,10 +96,10 @@ threshold = 100.
 global_subdomain_file     = None
 
 # output_folder
-out_folder                = "/scratch-shared/edwin/make_global_subdomains/test/"
+out_folder                = "/scratch-shared/edwin/make_global_subdomains/test_5arcmin/"
 
-# cell size in arcmin
-cellsize_in_arcmin = 0.5/60.
+#~ # cell size in arcmin
+#~ cellsize_in_arcmin = 0.5/60.
 
 
 def main():
@@ -152,7 +163,7 @@ def main():
 
     # size of every catchment
     catchment_map_size = pcr.areamaximum(catchmenttotal, catchment_map)
-    pcr.aguila(catchment_map_size) 
+#~     pcr.aguila(catchment_map_size) 
     
     # identify the large catchments
     large_catchments = pcr.ifthen(catchment_map_size > threshold, catchment_map)
@@ -175,13 +186,93 @@ def main():
     confluences_large_catchments     = pcr.ifthen(catchmenttotal_large_catchments > threshold, confluences_large_catchments)
     # - provide ids
     point_ids = pcr.nominal(pcr.uniqueid(pcr.cover(outlets_large_catchments_boolean, upstream_threshold_cells, confluences_large_catchments)))
-    pcr.aguila(point_ids)
+#~     pcr.aguila(point_ids)
     # - todo: add lakes and reservoirs
-    subcatchment = pcr.subcatchment(ldd_large_catchments, point_ids)
+    subcatchments = pcr.subcatchment(ldd_large_catchments, point_ids)
     
-    pcr.aguila(subcatchment)
+#~     print("subcatchments")
+#~     pcr.aguila(subcatchments)
+#~     input("Press Enter to continue...")
+
+    # size of every subcatchment
+    subcatchment_map_size = pcr.areamaximum(catchmenttotal_large_catchments, subcatchments)
+#~     pcr.aguila(catchment_map_size) 
+
+    # identify the large sub catchments
+    large_subcatchments = pcr.ifthen(subcatchment_map_size > threshold * threshold_subcathcment_factor, subcatchments)
+    
+    # define the subcatchments of every large catchment
+    # - ldd
+    ldd_large_subcatchments             = pcr.lddmask(ldd_map, pcr.defined(large_subcatchments))
+#~     pcr.aguila(ldd_large_subcatchments)
+    # - size
+    catchmenttotal_large_subcatchments  = pcr.catchmenttotal(pcr.scalar(1.0), ldd_large_subcatchments)
+    # - stream order
+    streamorder_large_subcatchments     = pcr.streamorder(ldd_large_subcatchments)
+    # - outlets/pits
+    outlets_large_subcatchments         = pcr.pit(ldd_large_subcatchments)
+    outlets_large_subcatchments_boolean = pcr.ifthen(pcr.scalar(outlets_large_subcatchments) > 0, pcr.boolean(1.0))
+    outlets_large_subcatchments_boolean = pcr.ifthen(outlets_large_subcatchments_boolean, outlets_large_subcatchments_boolean)  
+    # - cells with the catchment size eq threshold
+    upstream_threshold_cells            = pcr.ifthen(catchmenttotal_large_subcatchments == threshold, pcr.boolean(1.0))
+    # - confluences
+    confluences_large_subcatchments     = pcr.ifthen(pcr.downstream(ldd_large_subcatchments, streamorder_large_subcatchments) != streamorder_large_subcatchments, pcr.boolean(1.0))
+    confluences_large_subcatchments     = pcr.ifthen(catchmenttotal_large_subcatchments > threshold, confluences_large_subcatchments)
+    # - provide ids
+    point_ids = pcr.nominal(pcr.uniqueid(pcr.cover(outlets_large_subcatchments_boolean, upstream_threshold_cells, confluences_large_subcatchments)))
+#~     pcr.aguila(point_ids)
+    # - todo: add lakes and reservoirs
+    subsubcatchments = pcr.subcatchment(ldd_large_subcatchments, point_ids)
+    
+
+    # size of every subsubcatchment
+    subsubcatchment_map_size = pcr.areamaximum(catchmenttotal_large_subcatchments, subsubcatchments)
+
+
+#~     pcr.aguila(subsubcatchments)
+#~     input("Press Enter to continue...")
+
+
+    # until this point, we defined the following extents: subsubcatchments, subcatchments and catchment_map
+
+#~     # - provide ids for subsubcatchments
+#~     initial_ids_subsubcatchments = pcr.nominal(pcr.areaorder(subsubcatchment_map_size *-1.0, pcr.nominal(outlets_large_subcatchments_boolean)))
+#~     initial_ids_subsubcatchments = pcr.areamajority(initial_ids_subsubcatchments, subsubcatchments)
+#~     pcr.aguila(initial_ids_subsubcatchments)
+#~     print("initial ids subsubcatchments")
+#~     input("Press Enter to continue...")
+#~ 
+#~     
+#~     # - provide ids for subcatchments
+#~     initial_ids_subcatchments = pcr.nominal(pcr.areaorder(subcatchment_map_size *-1.0, pcr.nominal(outlets_large_catchments_boolean)))
+#~     initial_ids_subcatchments = pcr.areamajority(initial_ids_subcatchments, large_subcatchments)
+#~     pcr.aguila(initial_ids_subcatchments)
+#~     initial_ids_subcatchments = pcr.nominal(pcr.scalar(initial_ids_subcatchments) + pcr.mapmaximum(pcr.scalar(initial_ids_subsubcatchments)))
+#~     pcr.aguila(initial_ids_subcatchments)
+#~     print("initial ids subcatchments")
+#~     input("Press Enter to continue...")
+#~ 
+#~ 
+#~     # - provide ids for catchments
+#~     initial_ids_catchments = pcr.nominal(pcr.areaorder(catchment_map_size *-1.0, pcr.nominal(outlets_boolean)))
+#~     initial_ids_catchments = pcr.areamajority(initial_ids_catchments, catchment_map)
+#~     initial_ids_catchments = pcr.nominal(pcr.scalar(initial_ids_catchments) + pcr.mapmaximum(pcr.scalar(initial_ids_subcatchments)))
+#~     pcr.aguila(initial_ids_catchments)
+    
+    
+    initial_ids_subsubcatchments = pcr.clump(subsubcatchments)
+    initial_ids_subcatchments    = pcr.clump(subcatchments)
+    initial_ids_subcatchments    = pcr.nominal(pcr.scalar(initial_ids_subcatchments) + pcr.mapmaximum(pcr.scalar(initial_ids_subsubcatchments)))
+    initial_ids_catchments       = pcr.clump(catchment_map)
+    initial_ids_catchments       = pcr.nominal(pcr.scalar(initial_ids_catchments) + pcr.mapmaximum(pcr.scalar(initial_ids_subcatchments)))
+    
+    # merge
+    initial_ids = pcr.cover(initial_ids_subsubcatchments, initial_ids_subcatchments)
+    initial_ids = pcr.cover(initial_ids, initial_ids_catchments)
+    
+    print("initial ids")
+    pcr.aguila(initial_ids)
     input("Press Enter to continue...")
-    
 
 
     # number of large catchments
