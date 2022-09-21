@@ -185,6 +185,10 @@ def main():
     outlets_large_catchments_boolean = pcr.ifthen(outlets_large_catchments_boolean, outlets_large_catchments_boolean)  
     # - cells with the catchment size eq threshold
     upstream_threshold_cells         = pcr.ifthen(catchmenttotal_large_catchments == threshold, pcr.boolean(1.0))
+    upstream_threshold_cells         = pcr.cover(upstream_threshold_cells, pcr.ifthen(catchmenttotal_large_catchments == threshold * 2., pcr.boolean(1.0)))
+    upstream_threshold_cells         = pcr.cover(upstream_threshold_cells, pcr.ifthen(catchmenttotal_large_catchments == threshold * 3., pcr.boolean(1.0)))
+    upstream_threshold_cells         = pcr.cover(upstream_threshold_cells, pcr.ifthen(catchmenttotal_large_catchments == threshold * 4., pcr.boolean(1.0)))
+    upstream_threshold_cells         = pcr.cover(upstream_threshold_cells, pcr.ifthen(catchmenttotal_large_catchments == threshold * 5., pcr.boolean(1.0)))
     # - confluences
     confluences_large_catchments     = pcr.ifthen(pcr.downstream(ldd_large_catchments, streamorder_large_catchments) != streamorder_large_catchments, pcr.boolean(1.0))
     confluences_large_catchments     = pcr.ifthen(catchmenttotal_large_catchments > threshold, confluences_large_catchments)
