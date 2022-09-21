@@ -75,23 +75,23 @@ def define_landmask(input_file, clone_map_file, output_map_file):
 #~ global_ldd_inp_file    = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_30min/routing/surface_water_bodies/version_20210615/lddsound_30min_version_20210615.map"
 # - 5min
 global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_05min/routing/surface_water_bodies/version_20210330/lddsound_05min_version_20210330.map"
-# - 30sec
-global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_30sec/routing/surface_water_bodies/version_2020-05-XX/lddsound_30sec_version_202005XX.map"
+# ~ # - 30sec
+# ~ global_ldd_inp_file   = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_30sec/routing/surface_water_bodies/version_2020-05-XX/lddsound_30sec_version_202005XX.map"
 
 
 
 # threshold value that will be used as the maximum size of catchments (number of cells_
-# - for 30arcmin
-threshold = 200.
-threshold = 100.
+# ~ # - for 30arcmin
+# ~ threshold = 200.
+# ~ threshold = 100.
 # - for 5arcmin
 #~ threshold = 500000./(10.*10.)
-#~ threshold = 5000.
-threshold = 2500.
+threshold = 5000.
+# ~ threshold = 2500.
 
 
 # threshold factor to create sub catchments in the level
-threshold_subcathcment_factor = 2.0
+threshold_subcathcment_factor = 1.5
 
 # global subdomain file (initial)
 # - on snellius
@@ -236,33 +236,7 @@ def main():
 #~     input("Press Enter to continue...")
 
 
-    # until this point, we defined the following extents: subsubcatchments, subcatchments and catchment_map
-
-#~     # - provide ids for subsubcatchments
-#~     initial_ids_subsubcatchments = pcr.nominal(pcr.areaorder(subsubcatchment_map_size *-1.0, pcr.nominal(outlets_large_subcatchments_boolean)))
-#~     initial_ids_subsubcatchments = pcr.areamajority(initial_ids_subsubcatchments, subsubcatchments)
-#~     pcr.aguila(initial_ids_subsubcatchments)
-#~     print("initial ids subsubcatchments")
-#~     input("Press Enter to continue...")
-#~ 
-#~     
-#~     # - provide ids for subcatchments
-#~     initial_ids_subcatchments = pcr.nominal(pcr.areaorder(subcatchment_map_size *-1.0, pcr.nominal(outlets_large_catchments_boolean)))
-#~     initial_ids_subcatchments = pcr.areamajority(initial_ids_subcatchments, large_subcatchments)
-#~     pcr.aguila(initial_ids_subcatchments)
-#~     initial_ids_subcatchments = pcr.nominal(pcr.scalar(initial_ids_subcatchments) + pcr.mapmaximum(pcr.scalar(initial_ids_subsubcatchments)))
-#~     pcr.aguila(initial_ids_subcatchments)
-#~     print("initial ids subcatchments")
-#~     input("Press Enter to continue...")
-#~ 
-#~ 
-#~     # - provide ids for catchments
-#~     initial_ids_catchments = pcr.nominal(pcr.areaorder(catchment_map_size *-1.0, pcr.nominal(outlets_boolean)))
-#~     initial_ids_catchments = pcr.areamajority(initial_ids_catchments, catchment_map)
-#~     initial_ids_catchments = pcr.nominal(pcr.scalar(initial_ids_catchments) + pcr.mapmaximum(pcr.scalar(initial_ids_subcatchments)))
-#~     pcr.aguila(initial_ids_catchments)
-    
-    
+    # merging subsubcatchments, subcatchments and catchment_map
     initial_ids_subsubcatchments = pcr.clump(subsubcatchments)
     initial_ids_subcatchments    = pcr.clump(subcatchments)
     initial_ids_subcatchments    = pcr.nominal(pcr.scalar(initial_ids_subcatchments) + pcr.mapmaximum(pcr.scalar(initial_ids_subsubcatchments)))
@@ -272,10 +246,16 @@ def main():
     # merge
     initial_ids = pcr.cover(initial_ids_subsubcatchments, initial_ids_subcatchments)
     initial_ids = pcr.cover(initial_ids, initial_ids_catchments)
-    
+
+    # size
+    initial_ids_size = pcr.areatotal(pcr.scalar(1.0), initial_ids)
+
     print("initial ids")
     pcr.aguila(initial_ids)
+    pcr.aguila(initial_ids_size)
     input("Press Enter to continue...")
+    
+    # rule of making clones: initial_ids_catchments cannot be merged 
 
 
     # number of large catchments
