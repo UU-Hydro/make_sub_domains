@@ -247,12 +247,12 @@ def main():
     initial_ids = pcr.cover(initial_ids_subsubcatchments, initial_ids_subcatchments)
     initial_ids = pcr.cover(initial_ids, initial_ids_catchments)
 
-    # size
-    initial_ids_size = pcr.areatotal(pcr.scalar(1.0), initial_ids)
+    # ~ # size
+    # ~ initial_ids_size = pcr.areatotal(pcr.scalar(1.0), initial_ids)
 
     print("initial ids")
     pcr.aguila(initial_ids)
-    pcr.aguila(initial_ids_size)
+    # ~ pcr.aguila(initial_ids_size)
     input("Press Enter to continue...")
     
     # rule of making clones: initial_ids_catchments cannot be merged 
