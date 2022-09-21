@@ -75,8 +75,8 @@ def define_landmask(input_file, clone_map_file, output_map_file):
 #~ global_ldd_inp_file    = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_30min/routing/surface_water_bodies/version_20210615/lddsound_30min_version_20210615.map"
 # - 5min
 global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_05min/routing/surface_water_bodies/version_20210330/lddsound_05min_version_20210330.map"
-# ~ # - 30sec
-# ~ global_ldd_inp_file   = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_30sec/routing/surface_water_bodies/version_2020-05-XX/lddsound_30sec_version_202005XX.map"
+# - 30sec
+global_ldd_inp_file   = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_arise/develop/global_30sec/routing/surface_water_bodies/version_2020-05-XX/lddsound_30sec_version_202005XX.map"
 
 
 
@@ -87,7 +87,8 @@ global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_
 # - for 5arcmin
 #~ threshold = 500000./(10.*10.)
 # ~ threshold = 5000.
-threshold = 2500.
+# ~ threshold = 2500.
+threshold = 500000.
 
 
 # threshold factor to create sub catchments in the level
