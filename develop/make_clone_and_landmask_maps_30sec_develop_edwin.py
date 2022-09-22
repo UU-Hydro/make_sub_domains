@@ -86,10 +86,10 @@ global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_
 # ~ threshold = 100.
 # - for 5arcmin
 #~ threshold = 500000./(10.*10.)
-# ~ threshold = 5000.
+threshold = 5000.
 # ~ threshold = 2500.
 # ~ threshold = 500000.
-threshold = 1000.
+# ~ threshold = 1000.
 
 
 # threshold factor to create sub catchments in the level
@@ -180,6 +180,7 @@ def main():
     catchmenttotal_large_catchments  = pcr.catchmenttotal(pcr.scalar(1.0), ldd_large_catchments)
     # - stream order
     streamorder_large_catchments     = pcr.streamorder(ldd_large_catchments)
+    max_streamorder_large_catchments = pcr.areamaximum(streamorder_large_catchments, large_catchments)
     # - outlets/pits
     outlets_large_catchments         = pcr.pit(ldd_large_catchments)
     outlets_large_catchments_boolean = pcr.ifthen(pcr.scalar(outlets_large_catchments) > 0, pcr.boolean(1.0))
@@ -193,6 +194,8 @@ def main():
     # ~ upstream_threshold_cells         = pcr.cover(upstream_threshold_cells, pcr.ifthen(catchmenttotal_large_catchments == threshold * 50., pcr.boolean(1.0)))
     # - confluences
     confluences_large_catchments     = pcr.ifthen(pcr.downstream(ldd_large_catchments, streamorder_large_catchments) != streamorder_large_catchments, pcr.boolean(1.0))
+    # - confluences at the main stem only
+    confluences_large_catchments     = pcr.ifthen(pcr.downstream(ldd_large_catchments, streamorder_large_catchments) == max_streamorder_large_catchments, confluences_large_catchments)
     confluences_large_catchments     = pcr.ifthen(catchmenttotal_large_catchments > threshold, confluences_large_catchments)
     # - provide ids
     point_ids = pcr.nominal(pcr.uniqueid(pcr.cover(outlets_large_catchments_boolean, upstream_threshold_cells, confluences_large_catchments)))
