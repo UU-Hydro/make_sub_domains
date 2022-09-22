@@ -86,8 +86,8 @@ global_ldd_inp_file       = "/projects/0/dfguu/users/edwin/data/pcrglobwb_input_
 # ~ threshold = 100.
 # - for 5arcmin
 #~ threshold = 500000./(10.*10.)
-threshold = 5000.
-# ~ threshold = 2500.
+# ~ threshold = 5000.
+threshold = 2500.
 # ~ threshold = 500000.
 # ~ threshold = 1000.
 
